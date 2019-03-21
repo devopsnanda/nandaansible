@@ -1,0 +1,105 @@
+ANSIBLE MASTER SIDE (CONTROLER):
+1)first add user in linux
+-> sudo useradd ansible
+-> sudo passwd ansible
+2) Next give less authentication for ansible user.
+-> sudo visudo
+then type /root
+-> ansible ALL=(ALL) NOPASSWD: ALL
+3)Then go to the ansible user.
+->sudo su - ansible
+IN ANSIBLE USER:
+1) To install epel-release (epel - EXTRA PACKAGE FOR ENTERPRISE LINUX)
+-> sudo yum install epel-release
+2)To install Ansible
+-> sudo yum install ansible
+3)checking Ansible version is installed or not by using this command.
+-> ansible --version
+4)In Ansible configure, remove # tag inventories.
+-> sudo vi /etc/ansible/ansible.cfg
+5)Next adding the client ip address in etc/hosts.
+172.16.1.2 pandian0033c.mylabserver.com pandian0033c ->(client ip address
+and hostname).
+172.16.1.3 pandian0034c.mylabserver.com pandian0034c
+5)Next is generating ssh key.
+-> ssh-keygen -t rsa
+6) ls -lah
+7)Next go to .ssh file path.
+-> cd .ssh
+8) next checking ip address.
+-> ip a
+9) Next copy the ssh key to the client.
+-> ssh-copy-id (hostname or ip address of client)
+eg:ssh-copy-id pandian0033c
+10)In etc/ansible/hosts Create a group and give only client ip.
+-> sudo vi /etc/ansible/hosts
+eg:
+[webservers]-> (group name)
+
+172.16.1.2 -> (client ip private
+
+ip address)
+
+172.16.1.3
+
+11)Next creating log file for ansible and give ownership permission.
+->sudo touch /var/log/ansible.log
+->sudo chown ansible:ansible /var/log/ansible.log
+12) checking permission for ansible.log file
+->ls -ld /var/log/ansible.log
+IN CLIENT SIDE:
+1)first add user in linux
+-> sudo useradd ansible
+-> sudo passwd ansible
+2) Next give less authentication for ansible user.
+-> sudo visudo
+then type /root
+-> ansible ALL=(ALL) NOPASSWD: ALL
+3)Then go to the ansible user.
+->sudo su - ansible
+
+4)Next adding the server ip address in etc/hosts.
+172.31.1.2 pandian0032c.mylabserver.com pandian0032c ->(server ip address
+and hostname).
+
+ANSIBLE MASTER SIDE (CONTROLER):
+IN ANSIBLE USER:
+1) Next checking , is ping or not to client.
+-> ansible -m ping all
+2) Next creating a playbook .
+-> mkdir playbook
+3)Next go to playbook directory.
+-> cd playbook/
+4)In playbook , creating a yml file .
+-> sudo vi git.yml
+
+- hosts: webservers
+user: ansible
+sudo: yes
+connection: ssh
+tasks:
+
+- name: Installing the git (SCM)
+action: yum name=git state=installed
+
+-> sudo vi webserver.yml
+- hosts: web
+user: ansible
+sudo: yes
+connection: ssh
+gather_facts: no
+tasks:
+
+- name: Install Apache Web Server
+action: yum name=httpd state=installed
+- name: Restart HTTPD
+action: service name=httpd
+
+state=restarted
+5)Next run the yml file .
+-> ansible-playbook webserver.yml
+-> ansible-playbook git.yml
+IN CLIENT SIDE :
+1) git is installed or not in client .
+->which git
+then it will show git file path
